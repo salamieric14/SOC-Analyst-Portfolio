@@ -20,5 +20,5 @@ I will add tools here as I use them in verified projects.
 Projects will be linked here when completed.
 
 ## Contact
-GitHub: [Your GitHub profile link]
+GitHub: [https://github.com/salamieric14]
 LinkedIn: [Optional — add when available]
