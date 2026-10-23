@@ -1,0 +1,171 @@
+# PHISH-001 — Phishing Email Investigation
+
+> **Simulated SOC Level 1 training case.** This is a fictional investigation based on a training scenario, not an actual workplace incident. All indicators are simulated.
+
+## 1. Incident Overview
+
+- **Alert ID:** PHISH-001
+- **Investigation date:** 2026-10-23
+- **Analyst:** SOC Analyst Trainee
+- **Classification:** Suspected phishing — credential harvesting
+- **Status:** Investigated in a simulated training environment; user interaction and compromise unconfirmed.
+
+## 2. Scenario and Scope
+
+This investigation examines a simulated email that uses a pressured sign-in request and appears to impersonate company IT support.
+
+The objective was to assess the email's legitimacy, identify suspicious indicators, review the available authentication results, and recommend appropriate SOC response actions.
+
+The investigation was limited to the evidence provided in the training scenario. No live phishing website, actual recipient mailbox, or production security logs were investigated.
+
+## 3. Tools and Evidence
+
+The investigation used:
+
+- **Notion training scenario:** Instructions and simulated email evidence.
+- **Email header excerpt:** Sender information, Reply-To information, authentication results, and a sending IP address.
+- **Manual email analysis:** Review of the message's sign-in request, urgency, and impersonation indicators.
+- **Indicator extraction:** Identification and defanging of the sender, Reply-To, and sign-in link domains.
+- **Investigation notes:** Documentation of known facts, unknowns, verdict, confidence, and recommended actions.
+
+No live infrastructure was contacted, and no actual containment or remediation actions were performed.
+
+## 4. Investigation Timeline
+
+The available evidence did not provide verified email timestamps suitable for a complete incident timeline.
+
+The scenario instructs the analyst to distinguish the email's claimed `Date` field from the `Received` timestamp.
+
+In a real investigation, I would record both timestamps, account for possible time-zone differences, and use the available email security logs to reconstruct the delivery timeline.
+
+No timestamps have been invented for this report.
+
+## 5. Technical Analysis
+
+### Sender and Reply-To Comparison
+
+The simulated sender domain was:
+
+`northbridge-support[.]example`
+
+The simulated Reply-To domain was:
+
+`helpdesk-center[.]example`
+
+The domains differ, and the sender domain resembles a company support domain. This mismatch warrants investigation because replies may be directed somewhere other than the expected company domain.
+
+However, a different Reply-To domain does not independently prove malicious intent.
+
+### SPF / DKIM / DMARC
+
+The authentication results supplied in the training scenario were:
+
+- **SPF: FAIL** — The sending source did not pass the SPF check for the relevant domain.
+- **DKIM: NONE** — No DKIM signature was available for verification in the supplied results.
+- **DMARC: FAIL** — The message did not pass DMARC evaluation in the supplied results.
+
+These results increase suspicion when considered alongside the message's other indicators.
+
+Authentication failures alone do not prove phishing. Legitimate messages can also experience authentication problems.
+
+### Social Engineering Indicators
+
+The following suspicious characteristics were identified:
+
+1. **Urgency and pressure:** The message pressures the recipient to sign in.
+2. **Possible impersonation:** The sender domain resembles a company support domain.
+3. **Different Reply-To domain:** The Reply-To domain differs from the sender domain.
+4. **Sign-in request:** The message directs the recipient toward a sign-in page, creating a potential credential-theft risk.
+5. **Authentication failures:** SPF and DMARC failed, while no DKIM signature was available in the supplied results.
+
+Together, these characteristics support classifying the message as suspected phishing.
+
+### Defanged Link and Indicators
+
+The simulated sign-in link domain was:
+
+`login-check[.]example`
+
+The sending IP address was:
+
+`198.51.100.24`
+
+The IP address belongs to a range reserved for documentation and examples. It must not be treated as evidence of real malicious infrastructure.
+
+The domains and IP address in this case are simulated training indicators. They have not been verified as real malicious infrastructure.
+
+## 6. Evidence Table
+
+| Observation | Evidence | Interpretation |
+|---|---|---|
+| Suspicious sender domain | `northbridge-support[.]example` | Resembles a company support domain and warrants verification. |
+| Reply-To mismatch | `helpdesk-center[.]example` | Replies may go to a different domain than expected. |
+| Suspicious sign-in domain | `login-check[.]example` | The sign-in destination requires further investigation. |
+| SPF failure | SPF = FAIL | The message did not pass the relevant SPF check. |
+| No DKIM signature | DKIM = NONE | No DKIM signature was available in the supplied results. |
+| DMARC failure | DMARC = FAIL | The message did not pass DMARC evaluation in the supplied results. |
+| Sending IP | `198.51.100.24` | Documentation-only IP address; not evidence of real malicious infrastructure. |
+| User interaction | No evidence supplied | It is unknown whether the recipient clicked the link or submitted credentials. |
+| Account compromise | No evidence supplied | Compromise cannot be confirmed from the available evidence. |
+
+## 7. Assessment
+
+- **Verdict:** Likely phishing.
+- **Confidence:** High that the message is suspicious based on the combination of indicators.
+- **Priority:** Prompt investigation recommended. The final severity should follow the organization's incident priority matrix.
+- **Rationale:** The message combines a pressured sign-in request, a sender domain resembling company support, a different Reply-To domain, a separate sign-in domain, and authentication failures.
+- **What remains unknown:** Whether the recipient clicked the link, entered credentials, or experienced account compromise; whether other users received the message; and whether a live destination actually hosts phishing content.
+
+The confidence rating applies to the assessment that the message is suspicious. It does not indicate high confidence that an account was compromised.
+
+## 8. Recommended SOC Actions
+
+The following actions are recommendations. They have not been executed.
+
+1. Preserve the original email, full headers, relevant timestamps, and available security logs.
+2. Search email security logs and mailboxes to determine whether other users received the message.
+3. Ask the recipient whether they clicked the link or submitted credentials.
+4. Review proxy logs, web gateway logs, and endpoint telemetry for evidence of link access or suspicious activity.
+5. Review identity provider sign-in logs for unusual authentication attempts or evidence of account misuse.
+6. Have the security team analyze the URL using approved tools and procedures without opening it on a normal workstation.
+7. Document findings and escalate according to the organization's incident response policy.
+8. If credential submission or suspicious account activity is confirmed, follow incident response procedures for account protection, session revocation, credential resets, and further investigation as appropriate.
+9. If broader delivery is confirmed, follow the organization's approved procedures for email containment.
+
+No recipient compromise, domain blocking, or containment action is claimed.
+
+## 9. MITRE ATT&CK
+
+**Potential mapping:**
+
+- **T1566.002 — Spearphishing Link:** Potentially relevant because the simulated email contains a sign-in link that could be used to direct a recipient to a credential-harvesting page.
+
+This mapping is provisional. The scenario suggests a possible phishing link, but the actual destination and its behaviour have not been verified. The mapping should be confirmed against the available evidence before being treated as an established technique.
+
+Reference: MITRE ATT&CK — Phishing: Spearphishing Link.
+
+## 10. Lessons Learned
+
+### Lesson 1: Investigate multiple indicators together
+
+A suspicious domain, a Reply-To mismatch, and authentication failures provide stronger grounds for investigation when considered together. No single indicator automatically proves phishing.
+
+### Lesson 2: Separate suspicion from confirmed compromise
+
+An email can be classified as likely phishing even when there is no evidence that the recipient clicked the link or submitted credentials. Further investigation is required to establish user interaction and potential impact.
+
+### Lesson 3: Preserve evidence and document uncertainty
+
+A SOC analyst should preserve available evidence, record findings accurately, and distinguish confirmed facts from assumptions and unknowns.
+
+### Lesson 4: Recommend actions without inventing outcomes
+
+An analyst should clearly distinguish recommended containment from actions that have actually been performed. Accurate reporting is essential for effective incident response.
+
+## References
+
+- **MITRE ATT&CK:** Phishing — Spearphishing Link, technique T1566.002.
+- **Microsoft Learn:** Email authentication, including SPF, DKIM, and DMARC.
+- **CISA:** Guidance on recognizing and reporting phishing.
+
+These references provide supporting guidance for the investigation methodology. The case-specific indicators and findings are from the simulated training scenario.
